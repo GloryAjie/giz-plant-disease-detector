@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta charset="viewport" content="width=device-width", initial-scale="1.0">
+        <title>Plant Disease Prediction</title>
+        <style>
+            body{
+                font-family: Arial, Helvetica, sans-serif;
+                background-color: #f0f8ff;
+                color: #333;
+                text-align: center;
+                padding: 50px;
+            }
+            h1{
+                color: green;
+            }
 
+            
+            form{
+                margin: 20px auto;
+                padding: 20px;
+                border: 2px solid #4caf50;
+                border-radius: 25px;
+                background-color: #ffffff;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+                display: inline-block;
+            }
+
+            input[type = 'file']{
+                margin: 10px 0;
+            }
+            input[type = 'submit']{
+                background-color: green;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            input[type = 'submit']:hover{
+                background-color: green;
+
+            }
+
+            #result{
+                margin-top: 20px;
+                font-size: 1.5em;
+                color: green;
+                font-weight: bold;
+            }
+
+            #imageContainer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 20px;
+            }
+
+            #uploadImage{
+                max-width: 300px;
+                border: 2px solid green;
+                border-radius: 5px;
+                display: none;
+            }
+            
+        </style>
+        <script>
+            function previewImage(event){
+                const image = document.getElementById('uploadImage');
+                image.src = URL.createObjectURL(event.target.files[0]);
+                image.style.display = "block";
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Upload Plant Image</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required onchange="previewImage(event)">
+            <br>
+            <input type="submit" value="Predict">
+        </form>
+            <div id="imageContainer">
+                <div id="result"></div>
+                <img id="uploadImage" alt="Uploaded Image Preview">
+            </div>
+            <script>
+                // Handle Prediction from the server
+                document.querySelector('form').onsubmit = async function (event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(event.target);
+                    const response = await fetch("/predict", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    //Render the file to Json
+
+                    const result = await response.json();
+
+                    // Display Prediction result
+
+                    const resultDiv= document.getElementById("result");
+
+                    //If there is a response
+                    if (response.ok){
+                        resultDiv.innerHTML = `predicted Disease: ${result.predicted_disease} (Confidence: ${result.confidence.toFixed(2)}%)`;
+                    
+                    //If there is no reponse
+                    }else{
+                        resultDiv.innerHTML = `Error: ${result.error}`;
+                    }
+                };
+            </script>
+        </form>
+    </body>
+</html>
