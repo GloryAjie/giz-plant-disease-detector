@@ -20,7 +20,7 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 app = Flask(__name__)
 
 # Load the training CNN Model
-MODEL_PATH =  'NEW_H5/A_plant_disease_model.h5'
+MODEL_PATH = 'predictor-models/A_plant_disease_model.keras'
 model = load_model(MODEL_PATH)
 
 # Compile the model to avoid any error
